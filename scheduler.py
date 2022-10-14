@@ -23,6 +23,8 @@ raw_token = requests.post(server_ip_port + "/oauth2/token", headers={"Content-Ty
 token = raw_token.json()
 token = token["access_token"]
 
+print("Scheduler Started")
+
 #do other stuff
 while True:
     #print(configdata["schedules"].items())
