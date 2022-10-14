@@ -1,0 +1,27 @@
+#connection stuff
+client_id: "xxxxxx"
+client_secret: "xxxxxx"
+server_ip_port: "0.0.0.0:8080" #0.0.0.0:8080 works for most cases
+timezone: "Europe/London"
+
+#schedules config
+#possible actions: install, kill, reload, start, stop
+
+#you can either choose from executing one of the above actions or running a command,
+#as shown in the example bellow
+#when you choose one make sure the other is set to "None"
+
+#time is in 24 hour format
+# get the id from the url
+#panel.example.com/server/54bb2sj5
+schedules:
+  s1:
+    server_id: "54bb2sj5"
+    action: "kill"
+    command: "None"
+    time: "20:25"
+  s2:
+    server_id: "b4js67l3"
+    action: "None"
+    command: "stop"
+    time: "21:07"
