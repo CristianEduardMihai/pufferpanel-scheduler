@@ -32,11 +32,9 @@ while True:
         #print(type(v["action"]))
         #print(type(v["command"]))
         if v["time"] == datetime.datetime.now().strftime('%H:%M') and v["action"] != "None" and v["command"] == "None":
-            print(1)
             requests.post(f'{server_ip_port}/proxy/daemon/server/{v["server_id"]}/{v["action"]}', headers={"Authorization":f"Bearer {token}"})
             print(v["action"] + " / " + v["server_id"])
         elif v["time"] == datetime.datetime.now().strftime('%H:%M') and v["action"] == "None" and v["command"] != "None":
-            print(2)
             requests.post(f'{server_ip_port}/proxy/daemon/server/{v["server_id"]}/console', headers={"Authorization":f"Bearer {token}", "Content-Type":"application/json"}, data={"command":v["command"]})
             print(v["command"] + " / " + v["server_id"])
 
