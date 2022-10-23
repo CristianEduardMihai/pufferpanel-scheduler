@@ -19,9 +19,11 @@ client_secret = configdata["client_secret"]
 server_ip_port = "http://" + configdata["server_ip_port"]
 
 #get the 0auth token
-raw_token = requests.post(server_ip_port + "/oauth2/token", headers={"Content-Type":"application/x-www-form-urlencoded"}, data={"grant_type":"client_credentials", "client_id":client_id, "client_secret":client_secret})
-token = raw_token.json()
-token = token["access_token"]
+def get_token():
+    raw_token = requests.post(server_ip_port + "/oauth2/token", headers={"Content-Type":"application/x-www-form-urlencoded"}, data={"grant_type":"client_credentials", "client_id":client_id, "client_secret":client_secret})
+    token = raw_token.json()
+    token = token["access_token"]
+    return token
 
 print("Scheduler Started")
 
@@ -32,9 +34,11 @@ while True:
         #print(type(v["action"]))
         #print(type(v["command"]))
         if v["time"] == datetime.datetime.now().strftime('%H:%M') and v["action"] != "None" and v["command"] == "None":
+            token = get_token()
             requests.post(f'{server_ip_port}/proxy/daemon/server/{v["server_id"]}/{v["action"]}', headers={"Authorization":f"Bearer {token}"})
             print(v["action"] + " / " + v["server_id"])
         elif v["time"] == datetime.datetime.now().strftime('%H:%M') and v["action"] == "None" and v["command"] != "None":
+            token = get_token()
             requests.post(f'{server_ip_port}/proxy/daemon/server/{v["server_id"]}/console', headers={"Authorization":f"Bearer {token}", "Content-Type":"application/json"}, data={"command":v["command"]})
             print(v["command"] + " / " + v["server_id"])
 
