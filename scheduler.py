@@ -3,6 +3,7 @@ import yaml
 import os
 import time
 import datetime
+import schedule
 
 #get config data
 with open("config.yaml", "r") as config_yaml:
@@ -31,61 +32,50 @@ executed_actions = []
 #initiate the list cleanup counter
 list_counter = 0
 
-print("Scheduler Started")
+#print("Scheduler Started")
 
-#do other stuff
+def execute_schedule():
+    #if action
+    if action != "None" and command == "None":
+        token = get_token()
+        requests.post(f'{server_ip_port}/proxy/daemon/server/{v["server_id"]}/{v["action"]}', headers={"Authorization":f"Bearer {token}"})
+        print(f"Executed action {action} on server {server_id}")
+    
+    #if console command
+    elif action == "None" and command != "None":
+        token = get_token()
+        requests.post(f'{server_ip_port}/proxy/daemon/server/{v["server_id"]}/console', headers={"Authorization":f"Bearer {token}", "Content-Type":"application/json"}, data={"command":v["command"]})
+        print(f"Executed command {command} on server {server_id}")
+
+print("Loading following schedules: ")
+for k, v in configdata["schedules"].items():
+    print(k + ": " + str(v["name"]))
+
+    server_id = v["server_id"]
+    action = v["action"]
+    command = v["command"]
+    day = v["day"]
+    schedule_time = v["time"]
+
+    if day == "all":
+        schedule.every().day.at(schedule_time).do(execute_schedule)
+    elif day == "monday":
+        schedule.every().monday.at(schedule_time).do(execute_schedule)
+    elif day == "tuesday":
+        schedule.every().tuesday.at(schedule_time).do(execute_schedule)
+    elif day == "wednesday":
+        schedule.every().wednesday.at(schedule_time).do(execute_schedule)
+    elif day == "thursday":
+        schedule.every().thursday.at(schedule_time).do(execute_schedule)
+    elif day == "friday":
+        schedule.every().friday.at(schedule_time).do(execute_schedule)
+    elif day == "saturday":
+        schedule.every().saturday.at(schedule_time).do(execute_schedule)
+    elif day == "sunday":
+        schedule.every().sunday.at(schedule_time).do(execute_schedule)
+
+print("\nSchedules loaded. They will be executed at the specified times.")
+
 while True:
-    #print(configdata["schedules"].items())
-    for k, v in configdata["schedules"].items():
-        #print(type(v["action"]))
-        #print(type(v["command"]))
-
-        action_time = v["time"]
-        action_time = action_time.split(":")
-
-        now_time = datetime.datetime.now().strftime('%H:%M:%S')
-        now_time = now_time.split(":")
-
-
-
-        action_hours = int(action_time[0])
-        action_minutes = int(action_time[1])
-        action_seconds = int(action_time[2])
-
-        now_hours = int(now_time[0])
-        now_minutes = int(now_time[1])
-        now_seconds = int(now_time[2])
-
-        #------if action
-
-        # long block of text, time to break it down
-        # if the action hour is equal to the current hour
-        # and the action minute is equal to the current minute
-        # and the action second is equal to the current second or the current second + 1
-        # and the action is not equal to None
-        # then execute the action/command(as in the elif statement below)      
-        if (action_hours == now_hours and action_minutes == now_minutes and (action_seconds == now_seconds or action_seconds == now_seconds+1)) and v["action"] != "None" and v["command"] == "None":
-            # if the action has not yet been executed
-            if v["action"] + "_" + v["server_id"] not in executed_actions:
-                token = get_token()
-                requests.post(f'{server_ip_port}/proxy/daemon/server/{v["server_id"]}/{v["action"]}', headers={"Authorization":f"Bearer {token}"})
-                print(v["action"] + " / " + v["server_id"])
-                #set the action as executed
-                executed_actions.append(v["action"] + "_" + v["server_id"])
-        
-        #------if console command
-        elif (action_hours == now_hours and action_minutes == now_minutes and (action_seconds == now_seconds or action_seconds == now_seconds+1)) and v["action"] == "None" and v["command"] != "None":
-            if v["command"] + "_" + v["server_id"] not in executed_actions:
-                token = get_token()
-                requests.post(f'{server_ip_port}/proxy/daemon/server/{v["server_id"]}/console', headers={"Authorization":f"Bearer {token}", "Content-Type":"application/json"}, data={"command":v["command"]})
-                print(v["command"] + " / " + v["server_id"])
-                #set the action as executed
-                executed_actions.append(v["command"] + "_" + v["server_id"])
-        
-        #clean the executed actions list every 10 seconds
-        list_counter = list_counter + 1
-        if list_counter == 20:
-            executed_actions = []
-            list_counter = 0
-
+    schedule.run_pending()
     time.sleep(0.5)

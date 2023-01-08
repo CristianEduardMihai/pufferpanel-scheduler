@@ -16,12 +16,16 @@ timezone: "Europe/London"
 #panel.example.com/server/54bb2sj5
 schedules:
   s1:
+    name: "Action schedule example"
     server_id: "54bb2sj5"
     action: "kill"
     command: "None"
+    day: "all" #all, monday, tuesday, wednesday, thursday, friday, saturday, sunday
     time: "20:25:30"
   s2:
+    name: "Command schedule example"
     server_id: "b4js67l3"
     action: "None"
     command: "my-custom-console-command"
+    day: "wednesday"
     time: "21:07:21"
