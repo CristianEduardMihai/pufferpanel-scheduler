@@ -11,7 +11,7 @@ timezone: "Europe/London"
 #as shown in the example bellow
 #when you choose one make sure the other is set to "None"
 
-#time is in 24 hour format
+#time is in 24 hour format, all 3 values are required(HH:MM:SS)
 # get the id from the url
 #panel.example.com/server/54bb2sj5
 schedules:
@@ -19,9 +19,9 @@ schedules:
     server_id: "54bb2sj5"
     action: "kill"
     command: "None"
-    time: "20:25"
+    time: "20:25:30"
   s2:
     server_id: "b4js67l3"
     action: "None"
-    command: "stop"
-    time: "21:07"
+    command: "my-custom-console-command"
+    time: "21:07:21"
